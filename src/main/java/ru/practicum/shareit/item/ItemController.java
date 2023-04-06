@@ -31,8 +31,8 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@NotNull(message = "Предмет не может быть пустым")
-                                @Min(1)
-                                @PathVariable Long itemId) {
+                               @Min(1)
+                               @PathVariable Long itemId) {
         return mapper.toDtoItem(itemService.getItemById(itemId));
     }
 
@@ -43,6 +43,7 @@ public class ItemController {
         List<Item> userItems = itemService.getAllItems(userId);
         return mapper.mapItemListToDto(userItems);
     }
+
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @NotNull(message = "Предмет не может быть пустым")

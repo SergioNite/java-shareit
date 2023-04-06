@@ -29,6 +29,7 @@ public class UserController {
     public List<UserDto> findAllUsers() {
         return mapper.mapUsersToDtoList(userService.findAllUsers());
     }
+
     @GetMapping("/{userId}")
     public UserDto findUserById(@NotNull
                                 @Min(1)

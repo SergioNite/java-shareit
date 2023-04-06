@@ -11,7 +11,7 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private UserDao userDao;
 
     @Override

@@ -18,6 +18,7 @@ public class ItemMapper {
                 item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
+
     public Item toItemModel(ItemDto itemDto, Long ownerId) {
         return new Item(
                 itemDto.getId() != null ? itemDto.getId() : null,
@@ -28,6 +29,7 @@ public class ItemMapper {
                 null
         );
     }
+
     public List<ItemDto> mapItemListToDto(List<Item> userItems) {
         if (userItems.isEmpty()) {
             return new ArrayList<>();

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class InMemoryItemDao implements ItemDao{
+public class InMemoryItemDao implements ItemDao {
 
     private final Map<Long, Item> items = new HashMap<>();
     private long currentId = 1;
