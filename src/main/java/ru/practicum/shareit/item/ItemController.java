@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final ItemMapper mapper;
     public static final String USER_AUTH_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
@@ -24,23 +23,21 @@ public class ItemController {
                               @NotNull(message = ("Заголовок пользователя не может быть пустым"))
                               @Min(1)
                               @RequestHeader(USER_AUTH_HEADER) Long userId) {
-        Item item = mapper.toItemModel(itemDto, userId);
-        return mapper.toDtoItem(itemService.createItem(item));
+        return itemService.createItem(itemDto, userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@NotNull(message = "Предмет не может быть пустым")
                                @Min(1)
                                @PathVariable Long itemId) {
-        return mapper.toDtoItem(itemService.getItemById(itemId));
+        return itemService.getItemById(itemId);
     }
 
     @GetMapping
     public List<ItemDto> findAllItems(@NotNull(message = "Заголовок пользователя не может быть пустым")
                                       @Min(1)
                                       @RequestHeader(USER_AUTH_HEADER) Long userId) {
-        List<Item> userItems = itemService.getAllItems(userId);
-        return mapper.mapItemListToDto(userItems);
+        return itemService.getAllItems(userId);
     }
 
     @PatchMapping("/{itemId}")
@@ -51,14 +48,12 @@ public class ItemController {
                               @NotNull(message = "Заголокок пользователя не должен быть пустым")
                               @Min(1)
                               @RequestHeader(USER_AUTH_HEADER) Long userId) {
-        Item item = mapper.toItemModel(itemDto, userId);
-        item.setId(itemId);
-        return mapper.toDtoItem(itemService.updateItem(item));
+
+        return itemService.updateItem(itemDto, itemId, userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> findItemsByRequest(@RequestParam String text) {
-        List<Item> foundItems = itemService.getItemsBySearch(text);
-        return mapper.mapItemListToDto(foundItems);
+        return itemService.getItemsBySearch(text);
     }
 }
