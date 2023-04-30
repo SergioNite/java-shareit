@@ -32,9 +32,9 @@ public class InMemoryItemDao implements ItemDao {
         }
         Item updatedItem = items.get(itemId);
 
-        if (!updatedItem.getOwner().equals(item.getOwner())) {
+        if (updatedItem.getOwner().getId() != item.getOwner().getId()) {
             throw new ItemAccessDeniedException("Доступ запрещен для " +
-                    "userId: " + item.getOwner() + " и itemId: " + itemId);
+                    "userId: " + item.getOwner().getId() + " и itemId: " + itemId);
         }
         String name = item.getName();
         if (name != null) {
@@ -66,7 +66,7 @@ public class InMemoryItemDao implements ItemDao {
     public List<Item> getAllItems(Long userId) {
         List<Item> result = new ArrayList<>();
         for (Item item : items.values()) {
-            if (item.getOwner().equals(userId)) result.add(item);
+            if (item.getOwner().getId() == userId) result.add(item);
         }
         return result;
     }
