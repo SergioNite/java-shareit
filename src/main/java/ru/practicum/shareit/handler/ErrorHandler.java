@@ -69,19 +69,18 @@ public class ErrorHandler {
     public ErrorResponse handle(UnsupportedStatusException e) {
         return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(IllegalArgumentException e) {
         return new ErrorResponse("Статус уже был установлен ранее!", e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handle(UnavailableOwnerException e) {
         return new ErrorResponse("Владелец не может забронировать свой предмет", e.getMessage());
     }
-
-
-
 
 
 }

@@ -15,7 +15,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.storage.BookingState;
 import ru.practicum.shareit.booking.storage.BookingStatus;
-import ru.practicum.shareit.item.exceptions.ItemAccessDeniedException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailibleException;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -157,25 +156,25 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings;
         Sort sort = Sort.by("start").descending();
         switch (bookingState) {
-            case REJECTED :
+            case REJECTED:
                 bookings = bookingRepository.findByBookerIdAndStatus(user.getId(), REJECTED, sort);
                 break;
-            case WAITING :
+            case WAITING:
                 bookings = bookingRepository.findByBookerIdAndStatus(user.getId(), WAITING, sort);
                 break;
-            case CURRENT :
+            case CURRENT:
                 bookings = bookingRepository.findByBookerIdCurrent(user.getId(), now);
                 break;
-            case FUTURE :
+            case FUTURE:
                 bookings = bookingRepository.findByBookerIdAndStartIsAfter(user.getId(), now, sort);
                 break;
-            case PAST :
+            case PAST:
                 bookings = bookingRepository.findByBookerIdAndEndIsBefore(user.getId(), now, sort);
                 break;
-            case ALL :
+            case ALL:
                 bookings = bookingRepository.findByBookerId(user.getId(), sort);
                 break;
-            default :
+            default:
                 throw new IllegalArgumentException("Unknown state: Error");
         }
         return bookings.stream()
@@ -195,25 +194,25 @@ public class BookingServiceImpl implements BookingService {
         Sort sort = Sort.by("start").descending();
 
         switch (bookingState) {
-            case REJECTED :
+            case REJECTED:
                 bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(user.getId(), REJECTED, sort);
                 break;
-            case WAITING :
+            case WAITING:
                 bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(user.getId(), WAITING, sort);
                 break;
-            case CURRENT :
+            case CURRENT:
                 bookings = bookingRepository.findBookingByItemOwnerIdCurrent(user.getId(), now);
                 break;
-            case FUTURE :
+            case FUTURE:
                 bookings = bookingRepository.findBookingByItemOwnerIdAndStartIsAfter(user.getId(), now, sort);
                 break;
-            case PAST :
+            case PAST:
                 bookings = bookingRepository.findBookingByItemOwnerIdAndEndIsBefore(user.getId(), now, sort);
                 break;
-            case ALL :
+            case ALL:
                 bookings = bookingRepository.findBookingByItemOwnerId(user.getId(), sort);
                 break;
-            default :
+            default:
                 throw new IllegalArgumentException("Unknown state: Error");
         }
         return bookings.stream()

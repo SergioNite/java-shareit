@@ -17,13 +17,10 @@ import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
-import ru.practicum.shareit.item.storage.ItemDao;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.exceptions.EmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.storage.UserDao;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -40,6 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
 
@@ -73,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
         );
         Optional<Booking> booking = bookingRepository.findFirstByBookerIdAndItemIdAndEndBefore(authorId, itemId, LocalDateTime.now());
         if (booking.isEmpty()) {
-            throw new EmailErrorException("addComment: Cannt find booking item "+itemId);
+            throw new EmailErrorException("addComment: Cannt find booking item " + itemId);
         }
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new ItemNotFoundException("addComment: Item not found " + itemId)

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -43,7 +42,7 @@ public class ItemController {
                                @Min(1)
                                @PathVariable Long itemId,
                                @RequestHeader(USER_AUTH_HEADER) Long userId) {
-        return itemService.getItemById(itemId,userId);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping

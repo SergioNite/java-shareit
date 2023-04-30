@@ -9,9 +9,6 @@ import ru.practicum.shareit.booking.storage.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class BookingMapper {
     public static Booking mapToModel(BookingDtoRequest bookingDtoRequest, Item item, User user) {
@@ -46,4 +43,4 @@ public class BookingMapper {
         return dto;
     }
 
- }
+}

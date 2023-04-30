@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserService {
         String newEmail = user.getEmail();
 
         if (newEmail != null) {
-            if (!newEmail.isBlank()){
+            if (!newEmail.isBlank()) {
                 updatedUser.setEmail(newEmail);
             } else {
                 throw new EmailErrorException("Указанный E-mail (" + newEmail + ") используется другим юзером");
