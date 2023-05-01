@@ -2,8 +2,10 @@ package ru.practicum.shareit.item.storage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.dto.ItemResultDba;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -20,4 +22,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByOwner(User owner);
 
     boolean existsItemByIdAndAvailableIsTrue(long itemId);
+
 }
