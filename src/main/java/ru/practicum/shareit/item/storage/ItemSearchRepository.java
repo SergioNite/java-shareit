@@ -32,7 +32,7 @@ public interface ItemSearchRepository extends JpaRepository<ItemResultDba, Long>
             "from bookings bn " +
             "where bn.status = 'APPROVED' and " +
             "bn.item_id IN " +
-            "(select distinct it.item_id from items it where owner_id=:owner_id) " +
+            "(select distinct it.item_id from items it where owner_id=:ownerId) " +
             "and start_time<CURRENT_TIMESTAMP " +
             "group by bn.item_id,bn.status) tbl_tempNext " +
             "on it.item_id = tbl_tempNext.item_id " +
@@ -46,7 +46,7 @@ public interface ItemSearchRepository extends JpaRepository<ItemResultDba, Long>
             "from bookings bn " +
             "where bn.status = 'APPROVED' and " +
             "bn.item_id IN " +
-            "(select distinct it.item_id from items it where owner_id=:owner_id) " +
+            "(select distinct it.item_id from items it where owner_id=:ownerId) " +
             "and start_time>CURRENT_TIMESTAMP " +
             "group by bn.item_id,bn.status) as tbl_tempLast " +
             "on it.item_id = tbl_tempLast.item_id " +
@@ -55,7 +55,7 @@ public interface ItemSearchRepository extends JpaRepository<ItemResultDba, Long>
             ") tbl_LastBooking " +
             "on tbl_LastBooking.item_id = tbl_tempLast.item_id " +
             "and tbl_LastBooking.start_time = tbl_tempLast.last_start_time " +
-            "where it.owner_id = :owner_id order by it.item_id",
+            "where it.owner_id = :ownerId order by it.item_id",
             nativeQuery = true)
-    List<ItemResultDba> findAllItemByOwnerID(@Param("owner_id") long owner_id);
+    List<ItemResultDba> findAllItemByOwnerID(@Param("ownerId") long ownerId);
 }

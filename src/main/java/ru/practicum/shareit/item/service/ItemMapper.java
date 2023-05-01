@@ -56,7 +56,7 @@ public class ItemMapper {
 
     public static ItemDto toDtoItemFromItemResultDba(ItemResultDba item) {
         ItemDto itemDto = new ItemDto();
-        itemDto.setId(item.getItem_id());
+        itemDto.setId(item.getItemId());
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
@@ -70,21 +70,21 @@ public class ItemMapper {
 
         BookingDtoItem dto = new BookingDtoItem();
         if (prefix.equals("last")) {
-            if (itemResultDba.getLast_booking_id() == null) {
+            if (itemResultDba.getLastBookingId() == null) {
                 return null;
             }
-            dto.setId(itemResultDba.getLast_booking_id());
-            dto.setBookerId(itemResultDba.getLast_booker_id());
-            dto.setStart(itemResultDba.getLast_start_time());
-            dto.setEnd(itemResultDba.getLast_end_time());
+            dto.setId(itemResultDba.getLastBookingId());
+            dto.setBookerId(itemResultDba.getLastBookerId());
+            dto.setStart(itemResultDba.getLastStartTime());
+            dto.setEnd(itemResultDba.getLastEndTime());
         } else if (prefix.equals("next")) {
-            if (itemResultDba.getNext_booking_id() == null) {
+            if (itemResultDba.getNextBookingId() == null) {
                 return null;
             }
-            dto.setId(itemResultDba.getNext_booking_id());
-            dto.setBookerId(itemResultDba.getNext_booker_id());
-            dto.setStart(itemResultDba.getNext_start_time());
-            dto.setEnd(itemResultDba.getNext_end_time());
+            dto.setId(itemResultDba.getNextBookingId());
+            dto.setBookerId(itemResultDba.getNextBookerId());
+            dto.setStart(itemResultDba.getNextStartTime());
+            dto.setEnd(itemResultDba.getNextEndTime());
         }
         return dto;
     }
