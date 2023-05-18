@@ -153,6 +153,7 @@ public class ItemServiceImpl implements ItemService {
 
         return result;
     }
+
     private BookingDtoItem getBookingDtoShort(Long itemDtoEnhancedId, Map<Long, List<Booking>> itemIdToListBooking) {
         Optional<BookingDtoItem> bookingDtoShort = Optional.empty();
         if (itemIdToListBooking.containsKey(itemDtoEnhancedId)) {
@@ -161,6 +162,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return bookingDtoShort.orElse(null);
     }
+
     @Override
     public List<ItemDto> getItemsBySearch(String text) {
         if (Objects.isNull(text) || text.isBlank() || text.length() <= 1) {

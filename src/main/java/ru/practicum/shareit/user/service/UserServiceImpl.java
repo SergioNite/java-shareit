@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
             return userMapper.toUserDto(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {
             throw new DublicateEmailErrorException("createUser: duplicate email");
-        } catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new EmailErrorException("createUser: email error");
         }
     }
