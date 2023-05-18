@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,6 +27,10 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toUserModel(userDto, null);
         if (user.getEmail() == null || user.getName() == null) {
             throw new EmailErrorException("Empty user values");
+        }
+        Optional<User> emailUser = userRepository.findByEmail(user.getEmail());
+        if (!emailUser.isEmpty() && emailUser.get().getName().equalsIgnoreCase(user.getName())) {
+            throw new DublicateEmailErrorException("createUser: duplicate email");
         }
         try {
             user = userRepository.save(user);
@@ -56,6 +61,11 @@ public class UserServiceImpl implements UserService {
         }
 
         String newEmail = user.getEmail();
+
+        Optional<User> emailUser = userRepository.findByEmail(newEmail);
+        if (!emailUser.isEmpty() && emailUser.get().getId() != user.getId()) {
+            throw new DublicateEmailErrorException("createUser: duplicate email");
+        }
 
         if (newEmail != null) {
             if (!newEmail.isBlank()) {

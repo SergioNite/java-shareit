@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.storage.BookingStatus;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemResultDba;
 import ru.practicum.shareit.item.exceptions.ItemAccessDeniedException;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailibleException;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
@@ -19,7 +18,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
-import ru.practicum.shareit.item.storage.ItemSearchRepository;
 import ru.practicum.shareit.user.exceptions.EmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -34,7 +32,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final ItemSearchRepository itemSearchRepository;
     private final UserRepository userRepository;
     private final ItemMapper mapper;
     private final BookingRepository bookingRepository;
@@ -129,12 +126,29 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        User owner = userRepository.findById(userId).orElseThrow();
-        List<ItemResultDba> result = itemSearchRepository.findAllItemByOwnerID(owner.getId());
+        User owner = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Owner not found"));
 
-        return result.stream()
-                .map(itemResultDba -> ItemMapper.toDtoItemFromItemResultDba(itemResultDba))
+        List<Item> ownerItems = itemRepository.findAllByOwner(owner);
+
+        List<ItemDto> result = ownerItems.stream()
+                .sorted(Comparator.comparing(Item::getId))
+                .map(item -> {
+                    Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
+                            item.getId(),
+                            BookingStatus.APPROVED,
+                            LocalDateTime.now()
+                    );
+                    Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(
+                            item.getId(),
+                            BookingStatus.APPROVED,
+                            LocalDateTime.now());
+                    return ItemMapper.toDtoItem(item,
+                            (lastBooking.isEmpty() ? null : lastBooking.get()),
+                            (nextBooking.isEmpty() ? null : nextBooking.get()),
+                            null);
+                })
                 .collect(Collectors.toList());
+        return result;
     }
 
     @Override
