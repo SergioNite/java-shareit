@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exceptions.DublicateEmailErrorException;
 import ru.practicum.shareit.user.exceptions.EmailErrorException;
@@ -11,8 +12,8 @@ import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -23,25 +24,21 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.toUserModel(userDto, null);
-        if (user.getEmail() == null || user.getName() == null) {
-            throw new EmailErrorException("Empty user values");
-        }
-        Optional<User> emailUser = userRepository.findByEmail(user.getEmail());
-        if (!emailUser.isEmpty() && emailUser.get().getName().equalsIgnoreCase(user.getName())) {
-            throw new DublicateEmailErrorException("createUser: duplicate email");
-        }
         try {
-            user = userRepository.save(user);
-            log.debug("Добавлен юзер: {}", user);
-            return userMapper.toUserDto(user);
+            log.debug("Добавление юзера: {}", user);
+            return userMapper.toUserDto(userRepository.save(user));
         } catch (DataIntegrityViolationException e) {
             throw new DublicateEmailErrorException("createUser: duplicate email");
+        } catch (ConstraintViolationException e){
+            throw new EmailErrorException("createUser: email error");
         }
     }
 
     @Override
+    @Transactional
     public UserDto updateUser(long userId, UserDto userDto) {
         User user = userMapper.toUserModel(userDto, userId);
         User updatedUser = setUpdatedUserFields(userId, user);
@@ -49,7 +46,7 @@ public class UserServiceImpl implements UserService {
             user = userRepository.save(updatedUser);
             return userMapper.toUserDto(user);
         } catch (DataIntegrityViolationException e) {
-            throw new DublicateEmailErrorException("updateUser: cannt save empty user info by id " + userId);
+            throw new DublicateEmailErrorException("updateUser: can not save empty user info by id " + userId);
         }
     }
 
@@ -61,11 +58,6 @@ public class UserServiceImpl implements UserService {
         }
 
         String newEmail = user.getEmail();
-
-        Optional<User> emailUser = userRepository.findByEmail(newEmail);
-        if (!emailUser.isEmpty() && emailUser.get().getId() != user.getId()) {
-            throw new DublicateEmailErrorException("createUser: duplicate email");
-        }
 
         if (newEmail != null) {
             if (!newEmail.isBlank()) {

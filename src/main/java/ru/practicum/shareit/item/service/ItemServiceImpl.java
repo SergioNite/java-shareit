@@ -5,7 +5,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.service.BookingMapperShort;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.storage.BookingStatus;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -132,25 +134,33 @@ public class ItemServiceImpl implements ItemService {
 
         List<ItemDto> result = ownerItems.stream()
                 .sorted(Comparator.comparing(Item::getId))
-                .map(item -> {
-                    Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
-                            item.getId(),
-                            BookingStatus.APPROVED,
-                            LocalDateTime.now()
-                    );
-                    Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(
-                            item.getId(),
-                            BookingStatus.APPROVED,
-                            LocalDateTime.now());
-                    return ItemMapper.toDtoItem(item,
-                            (lastBooking.isEmpty() ? null : lastBooking.get()),
-                            (nextBooking.isEmpty() ? null : nextBooking.get()),
-                            null);
-                })
+                .map(mapper::toDtoItem)
                 .collect(Collectors.toList());
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Booking> last = bookingRepository.findAllByItemInAndStartLessThanEqualAndStatusIsOrderByStartDesc(
+                ownerItems, now, BookingStatus.APPROVED);
+        List<Booking> next = bookingRepository.findAllByItemInAndStartAfterAndStatusIsOrderByStartAsc(
+                ownerItems, now, BookingStatus.APPROVED);
+        Map<Long, List<Booking>> itemIdToListLast = last.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId(), Collectors.toList()));
+        Map<Long, List<Booking>> itemIdToListNext = next.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId(), Collectors.toList()));
+
+        result.forEach(i -> i.setLastBooking(getBookingDtoShort(i.getId(), itemIdToListLast)));
+        result.forEach(i -> i.setNextBooking(getBookingDtoShort(i.getId(), itemIdToListNext)));
+
         return result;
     }
-
+    private BookingDtoItem getBookingDtoShort(Long itemDtoEnhancedId, Map<Long, List<Booking>> itemIdToListBooking) {
+        Optional<BookingDtoItem> bookingDtoShort = Optional.empty();
+        if (itemIdToListBooking.containsKey(itemDtoEnhancedId)) {
+            bookingDtoShort = itemIdToListBooking.get(itemDtoEnhancedId).stream()
+                    .map(BookingMapperShort::bookingToBookingDtoShort).findFirst();
+        }
+        return bookingDtoShort.orElse(null);
+    }
     @Override
     public List<ItemDto> getItemsBySearch(String text) {
         if (Objects.isNull(text) || text.isBlank() || text.length() <= 1) {

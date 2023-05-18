@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(512) NOT NULL,
     CONSTRAINT pk_user PRIMARY KEY (user_id),
+    CONSTRAINT email_not_empty CHECK (users.email IS NOT NULL AND users.email <> ''),
     CONSTRAINT UQ_USER_EMAIL UNIQUE (email)
 );
 

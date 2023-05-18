@@ -3,6 +3,8 @@ package ru.practicum.shareit.user;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exceptions.EmailErrorException;
 import ru.practicum.shareit.user.service.UserService;
@@ -20,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody @Valid UserDto userDto) throws EmailErrorException {
+    public UserDto createUser(@RequestBody @Validated(Create.class) UserDto userDto) throws EmailErrorException {
         return userService.createUser(userDto);
     }
 
@@ -40,7 +42,7 @@ public class UserController {
     public UserDto updateUser(@NotNull
                               @Min(1)
                               @PathVariable Long userId,
-                              @RequestBody @Valid UserDto userDto) {
+                              @RequestBody @Validated(Update.class) UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 

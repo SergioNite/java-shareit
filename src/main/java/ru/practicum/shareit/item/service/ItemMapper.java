@@ -1,11 +1,9 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDtoItem;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemResultDba;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -13,7 +11,7 @@ import ru.practicum.shareit.user.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 public class ItemMapper {
     public static ItemDto toDtoItem(Item item, Booking lastBooking,
                                     Booking nextBooking,
@@ -28,6 +26,15 @@ public class ItemMapper {
         if (comments != null) {
             itemDto.setComments(CommentMapper.toCommentDtoList(comments));
         }
+        return itemDto;
+    }
+
+    public ItemDto toDtoItem(Item item) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
         return itemDto;
     }
 
@@ -54,38 +61,4 @@ public class ItemMapper {
         return result;
     }
 
-    public static ItemDto toDtoItemFromItemResultDba(ItemResultDba item) {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(item.getItemId());
-        itemDto.setName(item.getName());
-        itemDto.setDescription(item.getDescription());
-        itemDto.setAvailable(item.getAvailable());
-        itemDto.setLastBooking(bookingFromItemResultDba("last", item));
-        itemDto.setNextBooking(bookingFromItemResultDba("next", item));
-        return itemDto;
-    }
-
-    public static BookingDtoItem bookingFromItemResultDba(String prefix, ItemResultDba itemResultDba) {
-        if (itemResultDba == null) return null;
-
-        BookingDtoItem dto = new BookingDtoItem();
-        if (prefix.equals("last")) {
-            if (itemResultDba.getLastBookingId() == null) {
-                return null;
-            }
-            dto.setId(itemResultDba.getLastBookingId());
-            dto.setBookerId(itemResultDba.getLastBookerId());
-            dto.setStart(itemResultDba.getLastStartTime());
-            dto.setEnd(itemResultDba.getLastEndTime());
-        } else if (prefix.equals("next")) {
-            if (itemResultDba.getNextBookingId() == null) {
-                return null;
-            }
-            dto.setId(itemResultDba.getNextBookingId());
-            dto.setBookerId(itemResultDba.getNextBookerId());
-            dto.setStart(itemResultDba.getNextStartTime());
-            dto.setEnd(itemResultDba.getNextEndTime());
-        }
-        return dto;
-    }
 }
