@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.storage;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -28,6 +27,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findFirstByBookerIdAndItemIdAndEndBefore(long id, long itemId, LocalDateTime now);
 
     List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long bookerId, Pageable pageable);
+
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status, Pageable pageable);
 
     List<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
@@ -40,9 +40,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Long bookerId, LocalDateTime start, Pageable pageable);
 
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status, Pageable pageable);
+
     List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(Long bookerId, LocalDateTime start, Pageable pageable);
-    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-            Long bookerId, LocalDateTime start, LocalDateTime end, Pageable pageable);
+
+    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long bookerId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     Optional<Booking> findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
             long itemId, BookingStatus bookingStatus, LocalDateTime now);
