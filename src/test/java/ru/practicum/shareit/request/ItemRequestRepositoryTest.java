@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
@@ -19,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class ItemRequestRepositoryTest {
     @Autowired
-    private TestEntityManager entityManager;
-    @Autowired
     private ItemRequestRepository requestRepository;
     @Autowired
     private UserRepository userRepository;
@@ -28,7 +25,6 @@ class ItemRequestRepositoryTest {
     private User user1;
     private User user2;
     private ItemRequest itemRequest;
-    private ItemRequest itemRequest2;
 
     @BeforeEach
     void saveRequests() {
@@ -36,13 +32,14 @@ class ItemRequestRepositoryTest {
         user2 = new User(2L, "Two", "two@gmail.com");
 
         itemRequest = new ItemRequest(1L, "One", user1, LocalDateTime.now());
-        itemRequest2 = new ItemRequest(2L, "Two", user2, LocalDateTime.now());
     }
 
     @Test
-    void findAllByRequestor() {
+    void findAllByRequesterIdOrderByCreatedAsc() {
+        User user1 = new User(1L, "One", "one@gmail.com");
         User requestor1 = userRepository.save(user1);
-
+        itemRequest = new ItemRequest(1L, "One", user1, LocalDateTime.now());
+        itemRequest.setRequester(requestor1);
         itemRequest = requestRepository.save(itemRequest);
 
         List<ItemRequest> requests = requestRepository.findAllByRequesterIdOrderByCreatedAsc(requestor1.getId());
@@ -53,6 +50,7 @@ class ItemRequestRepositoryTest {
 
     @Test
     void findAllByRequestorNotLike() {
+        User user1 = new User(1L, "One", "one@gmail.com");
         User requestor1 = userRepository.save(user1);
         itemRequest = new ItemRequest(1L, "One", user1, LocalDateTime.now());
         itemRequest.setRequester(requestor1);
