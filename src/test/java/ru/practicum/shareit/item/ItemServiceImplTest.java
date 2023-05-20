@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.storage.BookingStatus;
@@ -197,8 +196,8 @@ class ItemServiceImplTest {
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
         when(commentRepository.save(any())).thenReturn(comment);
         when(userRepository.findById(any())).thenReturn(Optional.of(userTwo));
-        when(bookingRepository.findFirstByBookerIdAndItemIdAndEndBefore(anyLong(),anyLong(),any())).thenReturn(Optional.of(booking));
-        CommentDto commentDtoTest = itemService.addComment(item.getId(), userTwo.getId(), commentDtoRequest );
+        when(bookingRepository.findFirstByBookerIdAndItemIdAndEndBefore(anyLong(), anyLong(), any())).thenReturn(Optional.of(booking));
+        CommentDto commentDtoTest = itemService.addComment(item.getId(), userTwo.getId(), commentDtoRequest);
 
         assertEquals(commentDtoTest.getText(), commentDtoRequest.getText());
     }
