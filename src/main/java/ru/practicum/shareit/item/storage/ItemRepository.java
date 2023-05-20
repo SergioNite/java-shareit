@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     boolean existsItemByIdAndAvailableIsTrue(long itemId);
 
+    List<Item> findAllByRequestIn(List<ItemRequest> itemRequests);
+
+    List<Item> findAllByRequest(ItemRequest itemRequest);
 }

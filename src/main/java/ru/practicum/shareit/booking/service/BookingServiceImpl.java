@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,31 +149,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByUser(Long userId, String state) {
+    public List<BookingDto> findAllByUser(Long userId, String state, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь не найден " + userId));
         BookingState bookingState = parseBookingState(state);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
-        Sort sort = Sort.by("start").descending();
         switch (bookingState) {
             case REJECTED:
-                bookings = bookingRepository.findByBookerIdAndStatus(user.getId(), REJECTED, sort);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED, pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByBookerIdAndStatus(user.getId(), WAITING, sort);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING, pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findByBookerIdCurrent(user.getId(), now);
+                bookings = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                        userId, now, now, pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByBookerIdAndStartIsAfter(user.getId(), now, sort);
+                bookings = bookingRepository
+                        .findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findByBookerIdAndEndIsBefore(user.getId(), now, sort);
+                bookings = bookingRepository
+                        .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable);
                 break;
             case ALL:
-                bookings = bookingRepository.findByBookerId(user.getId(), sort);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: Error");
@@ -184,33 +187,32 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllByOwner(Long userId, String state) {
+    public List<BookingDto> findAllByOwner(Long userId, String state, Pageable pageable) {
         List<Booking> bookings;
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь не найден " + userId));
 
         BookingState bookingState = parseBookingState(state);
         LocalDateTime now = LocalDateTime.now();
-        Sort sort = Sort.by("start").descending();
 
         switch (bookingState) {
             case REJECTED:
-                bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(user.getId(), REJECTED, sort);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED, pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findBookingByItemOwnerIdAndStatus(user.getId(), WAITING, sort);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING, pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findBookingByItemOwnerIdCurrent(user.getId(), now);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(user.getId(), now, now, pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findBookingByItemOwnerIdAndStartIsAfter(user.getId(), now, sort);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findBookingByItemOwnerIdAndEndIsBefore(user.getId(), now, sort);
+                bookings = bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now(), pageable);
                 break;
             case ALL:
-                bookings = bookingRepository.findBookingByItemOwnerId(user.getId(), sort);
+                bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: Error");
