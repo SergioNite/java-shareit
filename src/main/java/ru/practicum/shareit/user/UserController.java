@@ -3,9 +3,10 @@ package ru.practicum.shareit.user;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.Create;
+import ru.practicum.shareit.Update;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserMapper;
+import ru.practicum.shareit.user.exceptions.EmailErrorException;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.constraints.Min;
@@ -15,35 +16,33 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @AllArgsConstructor
+@Validated
 public class UserController {
-    private final UserMapper mapper;
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Validated @RequestBody UserDto userDto) {
-        User user = mapper.toUserModel(userDto, null);
-        return mapper.toUserDto(userService.createUser(user));
+    public UserDto createUser(@RequestBody @Validated(Create.class) UserDto userDto) throws EmailErrorException {
+        return userService.createUser(userDto);
     }
 
     @GetMapping
     public List<UserDto> findAllUsers() {
-        return mapper.mapUsersToDtoList(userService.findAllUsers());
+        return userService.findAllUsers();
     }
 
     @GetMapping("/{userId}")
     public UserDto findUserById(@NotNull
                                 @Min(1)
                                 @PathVariable Long userId) {
-        return mapper.toUserDto(userService.findUserById(userId));
+        return userService.findUserById(userId);
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@NotNull
                               @Min(1)
                               @PathVariable Long userId,
-                              @Validated @RequestBody UserDto userDto) {
-        User user = mapper.toUserModel(userDto, userId);
-        return mapper.toUserDto(userService.updateUser(userId, user));
+                              @RequestBody @Validated(Update.class) UserDto userDto) {
+        return userService.updateUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
