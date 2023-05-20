@@ -42,7 +42,9 @@ class ItemRepositoryTest {
 
     @Test
     void search() {
+        User user = new User(1L, "User One", "one@gmail.com");
         user = userRepository.save(user);
+        item = new Item(1L, "item One", "item 1", true, user, null);
         item = itemRepository.save(item);
 
         List<Item> items = itemRepository.search("item");
