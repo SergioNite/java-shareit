@@ -24,8 +24,8 @@ class ItemRepositoryTest {
 
     @BeforeEach
     void createItem() {
-        user = new User(1L,"User One", "one@gmail.com");
-        item = new Item(1L,"Item One", "item 1", true, user, null);
+        user = new User(1L, "User One", "one@gmail.com");
+        item = new Item(1L, "Item One", "item 1", true, user, null);
     }
 
     @Test
@@ -43,7 +43,7 @@ class ItemRepositoryTest {
         user = userRepository.save(user);
         item = itemRepository.save(item);
 
-        List<Item> items = itemRepository.search( "item");
+        List<Item> items = itemRepository.search("item");
         assertThat(items).hasSize(1).contains(item);
     }
 }

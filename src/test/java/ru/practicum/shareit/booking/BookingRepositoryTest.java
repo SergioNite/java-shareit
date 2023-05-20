@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class BookingRepositoryTest {
@@ -36,10 +35,10 @@ class BookingRepositoryTest {
 
     @BeforeEach
     void create() {
-        owner = new User(1L,"owner", "owner@gmail.com");
-        booker = new User(2L,"booker", "boker@gmail.com");
-        item = new Item(1L,"item", "item description", true, owner, null);
-        booking = new Booking(1L,start, end, item, booker, BookingStatus.WAITING);
+        owner = new User(1L, "owner", "owner@gmail.com");
+        booker = new User(2L, "booker", "boker@gmail.com");
+        item = new Item(1L, "item", "item description", true, owner, null);
+        booking = new Booking(1L, start, end, item, booker, BookingStatus.WAITING);
         owner = userRepository.save(owner);
         booker = userRepository.save(booker);
         item = itemRepository.save(item);
