@@ -121,7 +121,7 @@ class UserServiceImplTest {
                 .email("testEmail@gmail.com")
                 .build();
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-        assertThrows(UserNotFoundException.class, () ->userService.deleteUserById(1L));
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(1L));
     }
 
     @Test
