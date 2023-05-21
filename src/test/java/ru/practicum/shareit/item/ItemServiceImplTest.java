@@ -146,7 +146,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void findByUserId() {
+    void testGetAllItems() {
         User user = new User(1L, "testName", "testEmail@gmail.com");
         Item item = Item.builder()
                 .id(1L)

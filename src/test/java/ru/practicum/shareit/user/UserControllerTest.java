@@ -25,8 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
 class UserControllerTest {
+
     @MockBean
-    UserService userService;
+    private UserService userService;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -39,7 +40,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void save() {
+    void createUser() {
         Mockito.when(userService.createUser(Mockito.any())).thenReturn(userDto);
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .header("X-Sharer-User-Id", 1L)
@@ -55,7 +56,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void update() {
+    void updateUser() {
         UserDto userDtoUpd = UserDto.builder()
                 .id(1L)
                 .name("newTestName")
@@ -76,7 +77,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void delete() {
+    void deleteUserById() {
         Mockito.doNothing().when(userService).deleteUserById(Mockito.anyLong());
         mockMvc.perform(MockMvcRequestBuilders.delete("/users/1")
                         .header("X-Sharer-User-Id", 1L))
@@ -85,7 +86,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void findById() {
+    void findUserById() {
         Mockito.when(userService.findUserById(Mockito.anyLong())).thenReturn(userDto);
         mockMvc.perform(MockMvcRequestBuilders.get("/users/1")
                         .header("X-Sharer-User-Id", 1L)
@@ -100,7 +101,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void findAll() {
+    void findAllUsers() {
         UserDto userDtoTwo = UserDto.builder()
                 .id(2L)
                 .name("testNameTwo")

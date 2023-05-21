@@ -29,7 +29,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    void findByOwner() {
+    void testFindAllByOwner() {
         User user = new User(1L, "User One", "one@gmail.com");
         item = new Item(1L, "Item One", "item 1", true, user, null);
         User newUser = userRepository.save(user);
@@ -41,7 +41,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    void search() {
+    void testSearch() {
         User user = new User(1L, "User One", "one@gmail.com");
         user = userRepository.save(user);
         item = new Item(1L, "item One", "item 1", true, user, null);

@@ -2,10 +2,13 @@ package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exceptions.DublicateEmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserMapper;
@@ -19,12 +22,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    UserMapper userMapper;
-    UserService userService;
+    private UserMapper userMapper;
+    @Mock
+    private UserService userService =new UserServiceImpl(userRepository,userMapper);
 
     @BeforeEach
     void beforeEach() {
@@ -34,28 +39,44 @@ class UserServiceImplTest {
     }
 
     @Test
-    void save() {
-        User user = User.builder()
-                .id(1L)
-                .name("testName")
-                .email("testEmail@gmail.com")
-                .build();
+    void createUser_whenValid_thenSavedUser() {
         UserDto userDto = UserDto.builder()
                 .id(1L)
                 .name("testName")
                 .email("testEmail@gmail.com")
                 .build();
+        User user = User.builder()
+                .id(1L)
+                .name("testName")
+                .email("testEmail@gmail.com")
+                .build();
 
-        Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserModel(userDto,1L));
+
         UserDto userDtoTest = userService.createUser(userDto);
 
+        Mockito.verify(userRepository).save(Mockito.any());
         assertEquals(userDto.getId(), userDtoTest.getId());
         assertEquals(userDto.getName(), userDtoTest.getName());
         assertEquals(userDto.getEmail(), userDtoTest.getEmail());
     }
 
     @Test
-    void update() {
+    void createUser_whenDublicateEmail_thenDublicateEmailErrorException() {
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .name("testName")
+                .email("testEmail@gmail.com")
+                .build();
+
+        Mockito.when(userRepository.save(Mockito.any())).thenThrow(DublicateEmailErrorException.class);
+
+        assertThrows(DublicateEmailErrorException.class,
+                ()->userService.createUser(userDto));
+    }
+
+    @Test
+    void updateUser_whenValid_thenSavedUser() {
         User user = User.builder()
                 .id(1L)
                 .name("testName")
@@ -76,7 +97,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateWithOnlyNameChange() {
+    void updateUser_whenNameChange_thenReturnedWithNewNameUser() {
         User user = User.builder()
                 .id(1L)
                 .name("testName")
@@ -96,36 +117,52 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateWithWrongUserId() {
+    void updateUser_whenWrongUserId_thenUserNotFoundException() {
+        Long wrongUserId = -1L;
         User user = User.builder()
                 .id(1L)
                 .name("testName")
                 .email("testEmail@gmail.com")
                 .build();
-        UserDto userDtoForUpdate = UserDto.builder()
+        UserDto userDtoExpected = UserDto.builder()
+                .id(1L)
                 .name("newTestName")
                 .email("newTestEmail@gmail.com")
                 .build();
 
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
-        Mockito.when(userRepository.findById(-1L)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        UserDto actualUser = userService.updateUser(user.getId(), userDtoExpected);
+        assertEquals(userDtoExpected,actualUser);
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(wrongUserId, userDtoExpected));
 
-        assertThrows(UserNotFoundException.class, () -> userService.updateUser(user.getId(), userDtoForUpdate));
     }
 
+
     @Test
-    void delete() {
+    void deleteUserById_whenUserValid_thenDelete() {
         User user = User.builder()
                 .id(1L)
                 .name("testName")
                 .email("testEmail@gmail.com")
                 .build();
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(user));
-        assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(1L));
+        Mockito.when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
+        userService.deleteUserById(user.getId());
+        Mockito.verify(userRepository).deleteById(Mockito.anyLong());
+    }
+    @Test
+    void deleteUserById_whenUserNotFound_thenUserNotFoundException() {
+        Long wrongUserId = -1L;
+        User user = User.builder()
+                .id(1L)
+                .name("testName")
+                .email("testEmail@gmail.com")
+                .build();
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(wrongUserId));
     }
 
     @Test
-    void findById() {
+    void findUserById_whenUserFound_thenReturnedUser() {
         User user = User.builder()
                 .id(1L)
                 .name("testName")
@@ -141,7 +178,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAll() {
+    void findUserById_whenUserNotFound_thenUserNotFoundException() {
+        long userId = 100L;
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,()->userService.findUserById(userId));
+    }
+    @Test
+    void findAll_thenReturnValid() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
         User userTwo = new User(2L, "testNameTwo", "testEmailTwo@gmail.com");
         List<User> userList = List.of(userOne, userTwo);
