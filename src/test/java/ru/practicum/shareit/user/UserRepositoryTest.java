@@ -18,7 +18,7 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @BeforeEach
-    public void BeforeEach(){
+    public void addUsers() {
         userRepository.save(User.builder()
                 .name("userName")
                 .email("userEmail@google.com")
@@ -26,7 +26,7 @@ class UserRepositoryTest {
     }
 
     @AfterEach
-    public void deleteUsers(){
+    public void deleteUsers() {
         userRepository.deleteAll();
     }
 
