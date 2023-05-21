@@ -29,7 +29,7 @@ class UserServiceImplTest {
     @Mock
     private UserMapper userMapper;
     @Mock
-    private UserService userService =new UserServiceImpl(userRepository,userMapper);
+    private UserService userService = new UserServiceImpl(userRepository, userMapper);
 
     @BeforeEach
     void beforeEach() {
@@ -51,7 +51,7 @@ class UserServiceImplTest {
                 .email("testEmail@gmail.com")
                 .build();
 
-        Mockito.when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserModel(userDto,1L));
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserModel(userDto, 1L));
 
         UserDto userDtoTest = userService.createUser(userDto);
 
@@ -72,7 +72,7 @@ class UserServiceImplTest {
         Mockito.when(userRepository.save(Mockito.any())).thenThrow(DublicateEmailErrorException.class);
 
         assertThrows(DublicateEmailErrorException.class,
-                ()->userService.createUser(userDto));
+                () -> userService.createUser(userDto));
     }
 
     @Test
@@ -133,7 +133,7 @@ class UserServiceImplTest {
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
         Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         UserDto actualUser = userService.updateUser(user.getId(), userDtoExpected);
-        assertEquals(userDtoExpected,actualUser);
+        assertEquals(userDtoExpected, actualUser);
         assertThrows(UserNotFoundException.class, () -> userService.updateUser(wrongUserId, userDtoExpected));
 
     }
@@ -150,6 +150,7 @@ class UserServiceImplTest {
         userService.deleteUserById(user.getId());
         Mockito.verify(userRepository).deleteById(Mockito.anyLong());
     }
+
     @Test
     void deleteUserById_whenUserNotFound_thenUserNotFoundException() {
         Long wrongUserId = -1L;
@@ -181,8 +182,9 @@ class UserServiceImplTest {
     void findUserById_whenUserNotFound_thenUserNotFoundException() {
         long userId = 100L;
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class,()->userService.findUserById(userId));
+        assertThrows(UserNotFoundException.class, () -> userService.findUserById(userId));
     }
+
     @Test
     void findAll_thenReturnValid() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
