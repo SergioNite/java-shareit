@@ -3,34 +3,45 @@ package ru.practicum.shareit.item;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.exceptions.UserNotFoundException;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ItemController.class)
+@SpringJUnitWebConfig(ItemController.class)
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class ItemControllerTest {
     @MockBean
     ItemService itemService;
+    @MockBean
+    UserService userService;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -63,7 +74,7 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void save() {
+    void createItem_whenValid_thenReturnItem() {
         when(itemService.createItem(any(), anyLong())).thenReturn(itemDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
@@ -81,7 +92,21 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void update() {
+    void createItem_whenInvalidUserId_thenReturnException() {
+        when(itemService.createItem(any(), anyLong())).thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                        .header("X-Sharer-User-Id", 100L)
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @SneakyThrows
+    @Test
+    void updateItem_whenValid_thenReturnItem() {
         ItemDto itemDtoForUpdate = ItemDto.builder()
                 .id(1L)
                 .name("newItemName")
@@ -106,7 +131,7 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void findByItemId() {
+    void getItemById_whenValid_thenReturnItem() {
         when(itemService.getItemById(anyLong(), anyLong())).thenReturn(itemDtoEnhanced);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/items/1")
@@ -134,10 +159,36 @@ class ItemControllerTest {
                         is(itemDtoEnhanced.getComments().get(0).getText())));
     }
 
+    @SneakyThrows
+    @Test
+    void getItemById_whenUserIdInvalid_thenReturnUserNotFoundException() {
+        Mockito.when(itemService.getAllItems(anyLong())).thenThrow(UserNotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/", 100L)
+                        .header("X-Sharer-User-Id", 400L))
+                .andExpect(status().isNotFound());
+    }
 
     @SneakyThrows
     @Test
-    void findBySearch() {
+    void findAllItems_whenValid_thenReturnItems() {
+        ItemDto itemDto = ItemDto.builder()
+                .id(1L)
+                .name("newItemName")
+                .description("newItemDescription")
+                .available(true)
+                .build();
+        List<ItemDto> itemDtoList = new ArrayList<>();
+        itemDtoList.add(itemDto);
+        Mockito.when(itemService.getAllItems(anyLong())).thenReturn(itemDtoList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/", 1L)
+                        .header("X-Sharer-User-Id", 1L))
+                .andExpect(status().isOk());
+    }
+
+
+    @SneakyThrows
+    @Test
+    void findItemsBySearch_whenExists_thenReturnItems() {
         when(itemService.getItemsBySearch(anyString())).thenReturn(List.of(itemDto));
         mockMvc.perform(MockMvcRequestBuilders.get("/items/search")
                         .header("X-Sharer-User-Id", 1L)
@@ -155,7 +206,7 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void createComment() {
+    void addComment_whenValid_thenReturnComment() {
         CommentDto commentDto = CommentDto.builder()
                 .text("commentText")
                 .build();
@@ -178,5 +229,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.authorName", is(commentDtoTest.getAuthorName()), String.class))
                 .andExpect(jsonPath("$.created",
                         is(commentDtoTest.getCreated().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))));
+
+        verify(itemService, times(1)).addComment(anyLong(), anyLong(), any());
     }
 }

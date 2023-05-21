@@ -71,7 +71,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         Map<Long, List<Item>> requestIdToItemList = items.stream()
                 .collect(Collectors.groupingBy(item -> item.getRequest().getId(), Collectors.toList()));
 
-        itemDtoList.forEach(ird -> ird.setItems(getItemDtoList(ird.getId(), requestIdToItemList)));
+        itemDtoList.forEach(itemRequestDto -> itemRequestDto.setItems(getItemDtoList(itemRequestDto.getId(), requestIdToItemList)));
         return itemDtoList;
     }
 

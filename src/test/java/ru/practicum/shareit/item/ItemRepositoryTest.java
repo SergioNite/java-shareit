@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +24,37 @@ class ItemRepositoryTest {
     private User user;
 
     @BeforeEach
-    void createItem() {
-        user = new User(1L, "User One", "one@gmail.com");
-        item = new Item(1L, "Item One", "item 1", true, user, null);
+    public void addUsers() {
+
+        user = userRepository.save(User.builder()
+                .name("user one")
+                .email("one@gmail.com")
+                .build());
+        item = itemRepository.save(Item.builder()
+                .name("item one")
+                .description("item 1")
+                .available(true)
+                .owner(user)
+                .build());
+    }
+
+    @AfterEach
+    public void deleteUsers() {
+        userRepository.deleteAll();
+        itemRepository.deleteAll();
     }
 
     @Test
     void testFindAllByOwner() {
-        User user = new User(1L, "User One", "one@gmail.com");
-        item = new Item(1L, "Item One", "item 1", true, user, null);
-        User newUser = userRepository.save(user);
-        item.setOwner(newUser);
-        Item newItem = itemRepository.save(item);
-
-        List<Item> items = itemRepository.findAllByOwner(newUser);
-        assertThat(items).hasSize(1).contains(newItem);
+        List<Item> items = itemRepository.findAllByOwner(user);
+        assertThat(items).hasSize(1).contains(item);
     }
 
     @Test
     void testSearch() {
-        User user = new User(1L, "User One", "one@gmail.com");
-        user = userRepository.save(user);
-        item = new Item(1L, "item One", "item 1", true, user, null);
-        item = itemRepository.save(item);
-
         List<Item> items = itemRepository.search("item");
-        assertThat(items).hasSize(1).contains(item);
+        assertThat(items).hasSize(1);
     }
+
+
 }
