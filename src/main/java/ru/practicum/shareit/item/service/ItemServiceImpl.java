@@ -68,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(long itemId, long authorId, CommentDtoRequest commentDto) {
-        User ownerUser = userRepository.findById(authorId).orElseThrow(
+        User authorUser = userRepository.findById(authorId).orElseThrow(
                 () -> new UserNotFoundException("addComment: User not found " + authorId)
         );
         Optional<Booking> booking = bookingRepository.findFirstByBookerIdAndItemIdAndEndBefore(authorId, itemId, LocalDateTime.now());
@@ -80,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         );
 
         Comment comment = commentMapper.toCommentModel(
-                commentDto, item, ownerUser);
+                commentDto, item, authorUser);
         comment = commentRepository.save(comment);
         return CommentMapper.toCommentDto(comment);
     }

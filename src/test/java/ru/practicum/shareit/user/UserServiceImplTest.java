@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exceptions.DublicateEmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
@@ -23,13 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
     @Mock
-    private UserService userService = new UserServiceImpl(userRepository, userMapper);
+    private UserService userService;
 
     @BeforeEach
     void beforeEach() {
@@ -45,12 +48,6 @@ class UserServiceImplTest {
                 .name("testName")
                 .email("testEmail@gmail.com")
                 .build();
-        User user = User.builder()
-                .id(1L)
-                .name("testName")
-                .email("testEmail@gmail.com")
-                .build();
-
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserModel(userDto, 1L));
 
         UserDto userDtoTest = userService.createUser(userDto);
@@ -118,7 +115,7 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_whenWrongUserId_thenUserNotFoundException() {
-        Long wrongUserId = -1L;
+        long wrongUserId = -1L;
         User user = User.builder()
                 .id(1L)
                 .name("testName")
@@ -153,12 +150,7 @@ class UserServiceImplTest {
 
     @Test
     void deleteUserById_whenUserNotFound_thenUserNotFoundException() {
-        Long wrongUserId = -1L;
-        User user = User.builder()
-                .id(1L)
-                .name("testName")
-                .email("testEmail@gmail.com")
-                .build();
+        long wrongUserId = -1L;
         assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(wrongUserId));
     }
 
@@ -199,4 +191,19 @@ class UserServiceImplTest {
         assertEquals(userList.get(0).getName(), userDtoList.get(0).getName());
         assertEquals(userList.get(0).getEmail(), userDtoList.get(0).getEmail());
     }
+
+    @Test
+    void getUserById_whenExists_thenReturnUser(){
+        User expectedUser = new User(1L, "testNameOne", "testEmailOne@gmail.com");
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedUser));
+        User resultUser = userService.getUserById(1L);
+        assertEquals(expectedUser,resultUser);
+    }
+    @Test
+    void getUserById_whenDoesNotExists_thenThrowException(){
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class,()->userService.getUserById(0L));
+    }
+
+
 }
