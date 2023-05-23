@@ -94,7 +94,6 @@ class ItemServiceImplTest {
                 .build();
 
         when(itemRepository.save(any())).thenReturn(itemMapper.toItemModel(itemDto, user));
-        when(userService.findUserById(1L)).thenReturn(userMapper.toUserDto(user));
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         ItemDto itemDtoTest = itemService.createItem(itemDto, user.getId());
