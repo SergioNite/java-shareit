@@ -396,6 +396,7 @@ class ItemServiceImplTest {
         assertEquals(commentDtoTest.getText(), commentDtoRequest.getText());
         verify(commentRepository, times(1)).save(any());
     }
+
     @Test
     void addComment_whenUserInvalid_thenThrowException() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");

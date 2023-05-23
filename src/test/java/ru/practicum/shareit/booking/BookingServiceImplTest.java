@@ -615,7 +615,7 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(), any(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(), any(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByUser(userOne.getId(), "CURRENT", Pageable.unpaged());
 
@@ -636,7 +636,7 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(anyLong(), any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByUser(userOne.getId(), "FUTURE", Pageable.unpaged());
 
@@ -657,7 +657,7 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(anyLong(), any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByUser(userOne.getId(), "PAST", Pageable.unpaged());
 
@@ -670,7 +670,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class,()->bookingService.findAllByUser(userOne.getId(), "PAST", Pageable.unpaged()));
+        assertThrows(UserNotFoundException.class, () -> bookingService.findAllByUser(userOne.getId(), "PAST", Pageable.unpaged()));
     }
 
     @Test
@@ -679,7 +679,7 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
 
-        assertThrows(UnsupportedStatusException.class,()->bookingService.findAllByUser(userOne.getId(), "ZZZZ", Pageable.unpaged()));
+        assertThrows(UnsupportedStatusException.class, () -> bookingService.findAllByUser(userOne.getId(), "ZZZZ", Pageable.unpaged()));
     }
 
     @Test
@@ -700,7 +700,7 @@ class BookingServiceImplTest {
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "ALL", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
 
     }
 
@@ -718,12 +718,13 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "REJECTED", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
     }
+
     @Test
     void findAllByOwner_whenValidInputAndStateWaiting_returnBooking() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
@@ -738,11 +739,11 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "WAITING", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -759,11 +760,11 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(),any(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(), any(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "CURRENT", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -780,11 +781,11 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "FUTURE", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -801,11 +802,11 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         List<BookingDto> result = bookingService.findAllByOwner(userOne.getId(), "PAST", Pageable.unpaged());
 
-        assertEquals(1,result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -822,9 +823,9 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        assertThrows(UserNotFoundException.class,()->bookingService.findAllByOwner(userOne.getId(), "WAITING", Pageable.unpaged()));
+        assertThrows(UserNotFoundException.class, () -> bookingService.findAllByOwner(userOne.getId(), "WAITING", Pageable.unpaged()));
     }
 
     @Test
@@ -841,9 +842,9 @@ class BookingServiceImplTest {
                 .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(),any(),any())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        assertThrows(UnsupportedStatusException.class,()->bookingService.findAllByOwner(userOne.getId(), "zzz", Pageable.unpaged()));
+        assertThrows(UnsupportedStatusException.class, () -> bookingService.findAllByOwner(userOne.getId(), "zzz", Pageable.unpaged()));
     }
 
 }

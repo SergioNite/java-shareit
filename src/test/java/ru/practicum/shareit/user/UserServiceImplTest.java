@@ -193,16 +193,17 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserById_whenExists_thenReturnUser(){
+    void getUserById_whenExists_thenReturnUser() {
         User expectedUser = new User(1L, "testNameOne", "testEmailOne@gmail.com");
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedUser));
         User resultUser = userService.getUserById(1L);
-        assertEquals(expectedUser,resultUser);
+        assertEquals(expectedUser, resultUser);
     }
+
     @Test
-    void getUserById_whenDoesNotExists_thenThrowException(){
+    void getUserById_whenDoesNotExists_thenThrowException() {
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class,()->userService.getUserById(0L));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(0L));
     }
 
 
