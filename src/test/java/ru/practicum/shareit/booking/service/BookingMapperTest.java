@@ -26,10 +26,10 @@ class BookingMapperTest {
                 .build();
         User user = User.builder().id(10L).name("test").email("test@google.com").build();
         Item item = Item.builder().id(1L).name("testName").available(false).build();
-        Booking expectedBooking = BookingMapper.mapToModel(bookingDtoShort,item,user);
-        assertEquals(item.getId(),expectedBooking.getItem().getId());
-        assertEquals(user.getId(),expectedBooking.getBooker().getId());
-        assertEquals(now,expectedBooking.getEnd());
+        Booking expectedBooking = BookingMapper.mapToModel(bookingDtoShort, item, user);
+        assertEquals(item.getId(), expectedBooking.getItem().getId());
+        assertEquals(user.getId(), expectedBooking.getBooker().getId());
+        assertEquals(now, expectedBooking.getEnd());
     }
 
     @Test
@@ -41,9 +41,9 @@ class BookingMapperTest {
                 .status(BookingStatus.WAITING)
                 .booker(user).item(item)
                 .build();
-        BookingDto bookingDto = BookingMapper.mapToDto(booking,item);
-        assertEquals(booking.getId(),bookingDto.getId());
-        assertEquals(booking.getItem().getId(),bookingDto.getItem().getId());
+        BookingDto bookingDto = BookingMapper.mapToDto(booking, item);
+        assertEquals(booking.getId(), bookingDto.getId());
+        assertEquals(booking.getItem().getId(), bookingDto.getItem().getId());
 
     }
 
@@ -56,8 +56,8 @@ class BookingMapperTest {
                 .status(BookingStatus.WAITING)
                 .booker(user).item(item)
                 .build();
-        BookingDtoItem bookingDtoItem =BookingMapper.bookingInItemDto(booking);
-        assertEquals(booking.getId(),bookingDtoItem.getId());
-        assertEquals(booking.getBooker().getId(),bookingDtoItem.getBookerId());
+        BookingDtoItem bookingDtoItem = BookingMapper.bookingInItemDto(booking);
+        assertEquals(booking.getId(), bookingDtoItem.getId());
+        assertEquals(booking.getBooker().getId(), bookingDtoItem.getBookerId());
     }
 }
