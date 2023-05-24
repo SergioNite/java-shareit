@@ -36,7 +36,6 @@ public class BookingMapper {
 
     public static BookingDtoItem bookingInItemDto(Booking booking) {
         if (booking == null) return null;
-
         BookingDtoItem dto = new BookingDtoItem();
         dto.setId(booking.getId());
         dto.setBookerId(booking.getBooker().getId());

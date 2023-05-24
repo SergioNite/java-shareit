@@ -459,4 +459,26 @@ class ItemServiceImplTest {
 
         assertThrows(ItemNotFoundException.class, () -> itemService.addComment(item.getId(), userTwo.getId(), commentDtoRequest));
     }
+
+    @Test
+    void getItemsBySearch_whenValid_returnList() {
+        User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
+        Item item = Item.builder()
+                .id(1L)
+                .name("itemName")
+                .description("itemDescription")
+                .available(true)
+                .owner(userOne)
+                .build();
+        when(itemRepository.search(any())).thenReturn(List.of(item));
+        List<ItemDto> result = itemService.getItemsBySearch("itemName");
+        assertEquals(1L,result.size());
+    }
+
+    @Test
+    void getItemsBySearch_whenEmptySearchText_returnEmptyList() {
+        int expectedSize = 0;
+        List<ItemDto> result = itemService.getItemsBySearch("");
+        assertEquals(expectedSize,result.size());
+    }
 }
