@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,6 @@ import ru.practicum.shareit.booking.exceptions.UnavaibleDatePeriodException;
 import ru.practicum.shareit.booking.exceptions.UnavailableBookingException;
 import ru.practicum.shareit.booking.exceptions.UnsupportedStatusException;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.service.BookingMapper;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.storage.BookingStatus;
 import ru.practicum.shareit.item.exceptions.ItemNotAvailibleException;

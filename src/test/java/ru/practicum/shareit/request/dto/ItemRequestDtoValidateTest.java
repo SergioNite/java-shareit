@@ -1,10 +1,9 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.dto;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

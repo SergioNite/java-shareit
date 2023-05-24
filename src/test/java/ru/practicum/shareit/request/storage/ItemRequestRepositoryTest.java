@@ -1,4 +1,5 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.storage;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
@@ -23,14 +23,11 @@ class ItemRequestRepositoryTest {
     private UserRepository userRepository;
 
     private User user1;
-    private User user2;
     private ItemRequest itemRequest;
 
     @BeforeEach
     void saveRequests() {
         user1 = new User(1L, "One", "one@gmail.com");
-        user2 = new User(2L, "Two", "two@gmail.com");
-
         itemRequest = new ItemRequest(1L, "One", user1, LocalDateTime.now());
     }
 
