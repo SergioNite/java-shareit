@@ -58,9 +58,9 @@ public class ItemMapper {
 
         return new Item(
                 itemDto.getId() != null ? itemDto.getId() : null,
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
+                itemDto.getName() != null ? itemDto.getName() : null,
+                itemDto.getDescription() != null ? itemDto.getDescription() : null,
+                itemDto.getAvailable() != null ? itemDto.getAvailable() : null,
                 owner,
                 itemRequest
         );

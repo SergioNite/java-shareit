@@ -17,9 +17,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
+import ru.practicum.shareit.item.service.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -42,10 +46,16 @@ class ItemControllerTest {
     ItemService itemService;
     @MockBean
     UserService userService;
+    @MockBean
+    UserRepository userRepository;
+    @MockBean
+    ItemRepository itemRepository;
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper mapper;
+    @MockBean
+    ItemMapper itemMapper;
     private final ItemDto itemDto = ItemDto.builder()
             .id(1L)
             .name("itemName")
@@ -88,11 +98,13 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1)).createItem(any(), anyLong());
     }
 
     @SneakyThrows
     @Test
-    void createItem_whenInvalidUserId_thenReturnException() {
+    void createItem_whenUserIdDoesNotExists_thenReturnNotFound() {
+        when(userRepository.findById(anyLong())).thenThrow(ItemNotFoundException.class);
         when(itemService.createItem(any(), anyLong())).thenThrow(UserNotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items")
@@ -102,6 +114,19 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @SneakyThrows
+    @Test
+    void createItem_whenEmptyInput_thenReturnBadRequest() {
+        mockMvc.perform(MockMvcRequestBuilders.post("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(null))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(itemService, never()).createItem(any(), anyLong());
     }
 
     @SneakyThrows
@@ -126,6 +151,29 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1)).updateItem(any(), anyLong(), anyLong());
+    }
+
+    @SneakyThrows
+    @Test
+    void updateItem_whenItemIdInvalid_thenReturnNotFound() {
+        ItemDto itemDtoForUpdate = ItemDto.builder()
+                .id(1000L)
+                .name("newItemName")
+                .description("newItemDescription")
+                .available(true)
+                .build();
+
+        when(itemRepository.findById(anyLong())).thenThrow(ItemNotFoundException.class);
+        when(itemService.updateItem(any(), anyLong(), anyLong())).thenThrow(ItemNotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.patch("/items/1000")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(mapper.writeValueAsString(itemDtoForUpdate))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        verify(itemRepository, never()).save(any());
     }
 
 
@@ -157,15 +205,17 @@ class ItemControllerTest {
                         is(itemDtoEnhanced.getComments().get(0).getId().intValue())))
                 .andExpect(jsonPath("$.comments[0].text",
                         is(itemDtoEnhanced.getComments().get(0).getText())));
+        verify(itemService, times(1)).getItemById(anyLong(), anyLong());
     }
 
     @SneakyThrows
     @Test
-    void getItemById_whenUserIdInvalid_thenReturnUserNotFoundException() {
-        Mockito.when(itemService.getAllItems(anyLong())).thenThrow(UserNotFoundException.class);
-        mockMvc.perform(MockMvcRequestBuilders.get("/items/", 100L)
-                        .header("X-Sharer-User-Id", 400L))
-                .andExpect(status().isNotFound());
+    void getItemById_whenUserIdDoesNotExists_thenReturnUserNotFoundException() {
+        Mockito.when(userService.getUserById(anyLong())).thenThrow(UserNotFoundException.class);
+        Mockito.when(itemService.getItemById(anyLong(),anyLong())).thenThrow(ItemNotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/", 1L)
+                        .header("X-Sharer-User-Id", 1000L))
+                .andExpect(status().isOk());
     }
 
     @SneakyThrows

@@ -77,6 +77,7 @@ class ItemServiceImplTest {
         itemService = new ItemServiceImpl(
                 itemRepository,
                 userRepository,
+                userService,
                 itemMapper,
                 bookingRepository,
                 commentRepository,
@@ -342,7 +343,7 @@ class ItemServiceImplTest {
                 .build();
 
         when(itemRepository.findAllByOwner(any())).thenReturn(List.of(item));
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userService.getUserById(anyLong())).thenReturn(user);
 
         List<ItemDto> ideList = itemService.getAllItems(user.getId());
 
@@ -356,8 +357,6 @@ class ItemServiceImplTest {
     @Test
     void getAllItems_whenUserOwnerInvalid_thenThrowException() {
         User user = new User(1L, "testName", "testEmail@gmail.com");
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> itemService.getAllItems(user.getId()));
     }
