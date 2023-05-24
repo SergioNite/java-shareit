@@ -115,19 +115,6 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.now().plusMinutes(120))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
-
-        when(userRepository.findById(any())).thenReturn(Optional.of(userTwo));
-        when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
 
         assertThrows(UnavaibleDatePeriodException.class, () -> bookingService.addBooking(userTwo.getId(), bookingRequest));
     }
@@ -142,19 +129,7 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.now().minusMinutes(1))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
-
         when(userRepository.findById(any())).thenReturn(Optional.empty());
-        when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
 
         assertThrows(ItemNotFoundException.class, () -> bookingService.addBooking(userTwo.getId(), bookingRequest));
     }
@@ -169,19 +144,9 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.now().minusMinutes(1))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
         when(itemRepository.findById(any())).thenReturn(Optional.empty());
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
 
         assertThrows(ItemNotFoundException.class, () -> bookingService.addBooking(userTwo.getId(), bookingRequest));
     }
@@ -189,26 +154,15 @@ class BookingServiceImplTest {
     @Test
     void addBooking_whenUserEqualsOwner_thenThrowException() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
-        User userTwo = new User(2L, "testNameTwo", "testEmailTwo@gmail.com");
         Item item = new Item(1L, "itemName", "itemDescription", true, userOne, null);
         BookingDtoRequest bookingRequest = BookingDtoRequest.builder()
                 .itemId(item.getId())
                 .start(LocalDateTime.now().minusMinutes(1))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
 
         assertThrows(UnavailableBookingException.class, () -> bookingService.addBooking(userOne.getId(), bookingRequest));
     }
@@ -223,19 +177,8 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.now().minusMinutes(1))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
-
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
 
         assertThrows(ItemNotAvailibleException.class, () -> bookingService.addBooking(userTwo.getId(), bookingRequest));
     }
@@ -250,18 +193,9 @@ class BookingServiceImplTest {
                 .start(LocalDateTime.now().minusMinutes(1))
                 .end(LocalDateTime.now().plusMinutes(16))
                 .build();
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().minusMinutes(90))
-                .end(LocalDateTime.now().minusMinutes(60))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(false);
 
         assertThrows(ItemNotAvailibleException.class, () -> bookingService.addBooking(userTwo.getId(), bookingRequest));
@@ -296,7 +230,6 @@ class BookingServiceImplTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.of(userOne));
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.existsItemByIdAndAvailableIsTrue(anyLong())).thenReturn(true);
         when(bookingRepository.getActiveBookings(anyLong())).thenReturn(List.of(booking, booking2));
 
@@ -337,22 +270,8 @@ class BookingServiceImplTest {
 
     @Test
     void patchBooking_whenBookingDoesNotExist_thenThrowException() {
-        User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
-        User userTwo = new User(2L, "testNameTwo", "testEmailTwo@gmail.com");
-        Item item = new Item(1L, "itemName", "itemDescription", true, userOne, null);
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().plusMinutes(8))
-                .end(LocalDateTime.now().plusMinutes(16))
-                .item(item)
-                .booker(userTwo)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.empty());
-        when(bookingRepository.save(any())).thenReturn(booking);
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
 
         assertThrows(ItemNotFoundException.class, () -> bookingService.patchBooking(1L, 1L, true));
     }
@@ -372,9 +291,7 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
 
         assertThrows(ItemNotFoundException.class, () -> bookingService.patchBooking(1L, 1L, true));
     }
@@ -394,7 +311,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -416,7 +332,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userTwo));
 
@@ -438,7 +353,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(bookingRepository.save(any())).thenReturn(booking);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
 
@@ -466,7 +380,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
 
         BookingDto bookingDto = bookingService.findById(userOne.getId(), booking.getId());
@@ -491,8 +404,6 @@ class BookingServiceImplTest {
                 .status(BookingStatus.WAITING)
                 .build();
 
-        when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> bookingService.findById(userOne.getId(), booking.getId()));
@@ -513,7 +424,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.empty());
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
 
         assertThrows(ItemNotFoundException.class, () -> bookingService.findById(userOne.getId(), booking.getId()));
@@ -534,7 +444,6 @@ class BookingServiceImplTest {
                 .build();
 
         when(bookingRepository.findById(any())).thenReturn(Optional.of(booking));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userTwo));
 
         assertThrows(UserNotFoundException.class, () -> bookingService.findById(userTwo.getId(), booking.getId()));
@@ -814,18 +723,8 @@ class BookingServiceImplTest {
     @Test
     void findAllByOwner_whenUserInvalid_thenThrowException() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
-        Item item = new Item(1L, "itemName", "itemDescription", true, userOne, null);
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().plusMinutes(8))
-                .end(LocalDateTime.now().plusMinutes(16))
-                .item(item)
-                .booker(userOne)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         assertThrows(UserNotFoundException.class, () -> bookingService.findAllByOwner(userOne.getId(), "WAITING", Pageable.unpaged()));
     }
@@ -833,18 +732,8 @@ class BookingServiceImplTest {
     @Test
     void findAllByOwner_whenStateInvalid_thenThrowException() {
         User userOne = new User(1L, "testNameOne", "testEmailOne@gmail.com");
-        Item item = new Item(1L, "itemName", "itemDescription", true, userOne, null);
-        Booking booking = Booking.builder()
-                .id(item.getId())
-                .start(LocalDateTime.now().plusMinutes(8))
-                .end(LocalDateTime.now().plusMinutes(16))
-                .item(item)
-                .booker(userOne)
-                .status(BookingStatus.WAITING)
-                .build();
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(userOne));
-        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(), any())).thenReturn(List.of(booking));
 
         assertThrows(UnsupportedStatusException.class, () -> bookingService.findAllByOwner(userOne.getId(), "zzz", Pageable.unpaged()));
     }

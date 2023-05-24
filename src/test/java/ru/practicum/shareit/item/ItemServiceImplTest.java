@@ -274,6 +274,7 @@ class ItemServiceImplTest {
 
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
         when(commentRepository.findByItemId(anyLong())).thenReturn(new ArrayList<>());
+        when(userService.getUserById(anyLong())).thenReturn(user);
 
         ItemDto itemDtoEnhanced = itemService.getItemById(item.getId(), user.getId());
 
@@ -325,7 +326,10 @@ class ItemServiceImplTest {
                 anyLong(), any(), any())).thenReturn(Optional.ofNullable(lastBooking));
         when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(
                 anyLong(), any(), any())).thenReturn(Optional.ofNullable(lastBooking));
+        when(userService.getUserById(anyLong())).thenReturn(user);
+
         ItemDto itemDtoEnhanced = itemService.getItemById(item.getId(), user.getId());
+
         assertEquals(itemDtoEnhanced.getId(), item.getId());
         assertNotNull(itemDtoEnhanced.getLastBooking());
         assertNotNull(itemDtoEnhanced.getNextBooking());
