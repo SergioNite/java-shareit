@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exceptions.DublicateEmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
@@ -64,6 +65,20 @@ class UserServiceImplTest {
                 .build();
 
         Mockito.when(userRepository.save(Mockito.any())).thenThrow(DublicateEmailErrorException.class);
+
+        assertThrows(DublicateEmailErrorException.class,
+                () -> userService.createUser(userDto));
+    }
+
+    @Test
+    void createUser_whenDublicateUser_thenDataIntegrityViolationException() {
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .name("testName")
+                .email("testEmail@gmail.com")
+                .build();
+
+        Mockito.when(userRepository.save(Mockito.any())).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(DublicateEmailErrorException.class,
                 () -> userService.createUser(userDto));

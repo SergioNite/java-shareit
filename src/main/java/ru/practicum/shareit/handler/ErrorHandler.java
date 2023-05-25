@@ -76,11 +76,4 @@ public class ErrorHandler {
         return new ErrorResponse("Статус уже был установлен ранее!", e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(UnavailableOwnerException e) {
-        return new ErrorResponse("Владелец не может забронировать свой предмет", e.getMessage());
-    }
-
-
 }
