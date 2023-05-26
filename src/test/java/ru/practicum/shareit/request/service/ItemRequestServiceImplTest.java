@@ -31,16 +31,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplTest {
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    ItemRequestMapper itemRequestMapper;
+    private ItemRequestMapper itemRequestMapper;
     @Mock
-    ItemMapper itemMapper;
-    ItemRequestService itemRequestService;
+    private ItemMapper itemMapper;
+    private ItemRequestService itemRequestService;
 
 
     @BeforeEach

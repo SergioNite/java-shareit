@@ -37,9 +37,9 @@ class UserControllerTest {
     @MockBean
     private UserRepository userRepository;
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
     private final UserDto userDto = UserDto.builder()
             .id(1L)
             .name("testName")

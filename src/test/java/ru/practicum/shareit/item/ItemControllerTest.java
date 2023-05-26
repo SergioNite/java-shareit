@@ -18,7 +18,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.exceptions.ItemNotFoundException;
-import ru.practicum.shareit.item.service.ItemMapper;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
@@ -43,19 +42,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class ItemControllerTest {
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
     @MockBean
-    UserService userService;
+    private UserService userService;
     @MockBean
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @MockBean
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    MockMvc mockMvc;
+    private  MockMvc mockMvc;
     @Autowired
-    ObjectMapper mapper;
-    @MockBean
-    ItemMapper itemMapper;
+    private ObjectMapper mapper;
     private final ItemDto itemDto = ItemDto.builder()
             .id(1L)
             .name("itemName")

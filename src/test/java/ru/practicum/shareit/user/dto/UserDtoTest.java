@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @JsonTest
 class UserDtoTest {
     @Autowired
-    JacksonTester<UserDto> json;
+    private JacksonTester<UserDto> json;
 
     @SneakyThrows
     @Test

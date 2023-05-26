@@ -40,24 +40,24 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
     @Mock
-    ItemRequestRepository itemRequestRepository;
+    private ItemRequestRepository itemRequestRepository;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    UserService userService;
+    private UserService userService;
     @Mock
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
     @Mock
-    UserMapper userMapper;
+    private UserMapper userMapper;
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
     @Mock
-    CommentMapper commentMapper;
-    ItemService itemService;
+    private CommentMapper commentMapper;
+    private ItemService itemService;
 
     @BeforeEach
     void beforeEach() {
@@ -472,13 +472,13 @@ class ItemServiceImplTest {
                 .build();
         when(itemRepository.search(any())).thenReturn(List.of(item));
         List<ItemDto> result = itemService.getItemsBySearch("itemName");
-        assertEquals(1L,result.size());
+        assertEquals(1L, result.size());
     }
 
     @Test
     void getItemsBySearch_whenEmptySearchText_returnEmptyList() {
         int expectedSize = 0;
         List<ItemDto> result = itemService.getItemsBySearch("");
-        assertEquals(expectedSize,result.size());
+        assertEquals(expectedSize, result.size());
     }
 }
