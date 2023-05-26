@@ -1,15 +1,19 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
+@Validated
 @AllArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -39,13 +43,17 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllByUser(@RequestParam(defaultValue = "ALL") String state,
-                                          @RequestHeader(USER_ID_HEADER) Long userId) {
-        return bookingService.findAllByUser(userId, state);
+                                          @RequestHeader(USER_ID_HEADER) Long userId,
+                                          @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                          @Positive @RequestParam(defaultValue = "10") Integer size) {
+        return bookingService.findAllByUser(userId, state, PageRequest.of((from == 0 ? 0 : (from / size)), size));
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllByOwner(@RequestParam(defaultValue = "ALL") String state,
-                                           @RequestHeader(USER_ID_HEADER) Long userId) {
-        return bookingService.findAllByOwner(userId, state);
+                                           @RequestHeader(USER_ID_HEADER) Long userId,
+                                           @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                           @Positive @RequestParam(defaultValue = "10") Integer size) {
+        return bookingService.findAllByOwner(userId, state, PageRequest.of((from == 0 ? 0 : (from / size)), size));
     }
 }

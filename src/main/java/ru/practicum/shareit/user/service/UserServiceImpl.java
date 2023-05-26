@@ -50,7 +50,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private User setUpdatedUserFields(long userId, User user) {
+    @Override
+    public User setUpdatedUserFields(long userId, User user) {
         User updatedUser = getUserById(userId);
 
         if (user.getName() != null) {

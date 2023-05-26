@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 @Service
+@Mapper(componentModel = "spring")
 public class BookingMapper {
     public static Booking mapToModel(BookingDtoRequest bookingDtoRequest, Item item, User user) {
         Booking booking = new Booking();
@@ -34,7 +36,6 @@ public class BookingMapper {
 
     public static BookingDtoItem bookingInItemDto(Booking booking) {
         if (booking == null) return null;
-
         BookingDtoItem dto = new BookingDtoItem();
         dto.setId(booking.getId());
         dto.setBookerId(booking.getBooker().getId());

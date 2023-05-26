@@ -23,6 +23,7 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.exceptions.EmailErrorException;
 import ru.practicum.shareit.user.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final ItemMapper mapper;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
@@ -68,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addComment(long itemId, long authorId, CommentDtoRequest commentDto) {
-        User ownerUser = userRepository.findById(authorId).orElseThrow(
+        User authorUser = userRepository.findById(authorId).orElseThrow(
                 () -> new UserNotFoundException("addComment: User not found " + authorId)
         );
         Optional<Booking> booking = bookingRepository.findFirstByBookerIdAndItemIdAndEndBefore(authorId, itemId, LocalDateTime.now());
@@ -80,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
         );
 
         Comment comment = commentMapper.toCommentModel(
-                commentDto, item, ownerUser);
+                commentDto, item, authorUser);
         comment = commentRepository.save(comment);
         return CommentMapper.toCommentDto(comment);
     }
@@ -116,6 +118,10 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItemById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Wrong id"));
+        User user = userService.getUserById(userId);
+        if (Objects.isNull(user)) {
+            throw new UserNotFoundException("User does not exist!");
+        }
         List<Comment> comments = commentRepository.findByItemId(itemId);
         if (item.getOwner().getId().equals(userId)) {
             LocalDateTime now = LocalDateTime.now();
@@ -128,8 +134,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        User owner = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Owner not found"));
+        User owner = userService.getUserById(userId);
 
+        if (Objects.isNull(owner)) {
+            throw new UserNotFoundException("Owner not found");
+        }
         List<Item> ownerItems = itemRepository.findAllByOwner(owner);
 
         List<ItemDto> result = ownerItems.stream()

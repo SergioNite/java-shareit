@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank(groups = Create.class)
+    @NotBlank(groups = Create.class, message = "Name cannot be empty or null")
     private String name;
     @Email
-    @NotNull(groups = Create.class)
+    @NotNull(groups = Create.class, message = "Email cannot be empty or null")
     private String email;
 }
