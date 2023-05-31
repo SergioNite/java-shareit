@@ -16,6 +16,7 @@ import javax.validation.constraints.Min;
 @Slf4j
 public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @Autowired
     public ItemRequestController(ItemRequestClient itemRequestClient) {
@@ -23,32 +24,28 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addRequest(@RequestHeader("X-Sharer-User-Id") long requestorId,
-                                     @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("Request form user {} was added", requestorId);
+    public ResponseEntity<Object> addRequest(@RequestHeader(USER_ID_HEADER) long requestorId,
+                                             @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestClient.addRequest(itemRequestDto, requestorId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllRequestsForRequestor(@RequestHeader("X-Sharer-User-Id") long requestorId) {
-        log.info("Get all requests for requestor {}", requestorId);
+    public ResponseEntity<Object> getAllRequestsForRequestor(@RequestHeader(USER_ID_HEADER) long requestorId) {
         return itemRequestClient.getAllRequestsForRequestor(requestorId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllRequests(@RequestParam(value = "from", required = false, defaultValue = "0")
-                                               @Min(0) int from,
-                                               @RequestParam(value = "size", required = false, defaultValue = "20")
-                                               @Min(1) int size,
-                                               @RequestHeader("X-Sharer-User-Id") long requestorId) {
-        log.info("Get all requests");
+                                                 @Min(0) int from,
+                                                 @RequestParam(value = "size", required = false, defaultValue = "20")
+                                                 @Min(1) int size,
+                                                 @RequestHeader(USER_ID_HEADER) long requestorId) {
         return itemRequestClient.getAllRequests(requestorId, from, size);
     }
 
     @GetMapping("{requestId}")
     public ResponseEntity<Object> getOneRequest(@PathVariable long requestId,
-                                        @RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Get request {}", requestId);
+                                                @RequestHeader(USER_ID_HEADER) long userId) {
         return itemRequestClient.getOneRequest(requestId, userId);
     }
 }

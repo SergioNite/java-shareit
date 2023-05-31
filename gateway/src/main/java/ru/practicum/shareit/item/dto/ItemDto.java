@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.Create;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {
@@ -22,10 +24,4 @@ public class ItemDto {
     private Boolean available;
     private Long requestId;
 
-    public ItemDto(String name, String description, Boolean available, Long requestId) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.requestId = requestId;
-    }
 }
